@@ -6,7 +6,8 @@
   "scripts": {
     "dev": "vite",
     "build": "tsc -b && vite build",
-    "preview": "vite preview"
+    "preview": "vite preview",
+    "test:openrouter": "npx tsx test-openrouter.ts"
   },
   "dependencies": {
     "@openrouter/sdk": "^1.5.33",

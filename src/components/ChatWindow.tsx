@@ -13,6 +13,7 @@ import {
   getStoredModel,
   OpenRouterMessage,
 } from '../services/openRouter';
+import { sendChatMessageToBackend } from '../services/chatBackend';
 
 const INITIAL_SESSIONS: ChatSession[] = [
   {
@@ -163,6 +164,18 @@ export const ChatWindow: React.FC = () => {
                   : msg
               )
             );
+
+            // Persist the completed exchange into MongoDB in the background
+            fetch('/api/messages', {
+              method: 'POST',
+              headers: { 'Content-Type': 'application/json' },
+              body: JSON.stringify({
+                sessionId: activeSessionId,
+                role: 'assistant',
+                content: fullContent,
+                metadata: { reasoningTokens, model: activeModel, mode: activeMode },
+              }),
+            }).catch(() => {});
           },
           onError: async () => {
             // Handled in catch block
@@ -170,9 +183,55 @@ export const ChatWindow: React.FC = () => {
         });
         return;
       } catch (streamError) {
-        console.warn('OpenRouter stream failed, falling back to simulated Nethul:', streamError);
-        // Fallback gracefully below
+        console.warn('OpenRouter client stream failed, attempting backend MongoDB API route:', streamError);
       }
+    }
+
+    // Try backend API route (/api/chat) which automatically stores to MongoDB
+    try {
+      const botMessageId = `bot-${Date.now()}`;
+      const botPlaceholder: Message = {
+        id: botMessageId,
+        sender: 'bot',
+        text: '',
+        timestamp: new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' }),
+        model: `${activeModel}`,
+        mode: activeMode,
+        isStreaming: true,
+      };
+      updateCurrentMessages((prev) => [...prev, botPlaceholder]);
+
+      const backendData = await sendChatMessageToBackend({
+        sessionId: activeSessionId,
+        messages: [
+          ...messages.map((m) => ({
+            role: (m.sender === 'user' ? 'user' : 'assistant') as 'user' | 'assistant',
+            content: m.text,
+          })),
+          { role: 'user', content: text },
+        ],
+        model: getStoredModel(),
+        mode: activeMode,
+      });
+
+      setIsThinking(false);
+      updateCurrentMessages((prev) =>
+        prev.map((msg) =>
+          msg.id === botMessageId
+            ? {
+                ...msg,
+                text: backendData.reply,
+                isStreaming: false,
+                thinkingTime: backendData.reasoningTokens
+                  ? `Thought (${backendData.reasoningTokens} tokens)`
+                  : undefined,
+              }
+            : msg
+        )
+      );
+      return;
+    } catch (backendError) {
+      console.warn('Backend /api/chat unavailable, using local fallback:', backendError);
     }
 
     // Local Simulated Nethul Response (Fallback or default)

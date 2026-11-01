@@ -19,7 +19,7 @@ if (!apiKey) {
 }
 
 if (!apiKey) {
-  apiKey = "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";
+  apiKey = "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";
 }
 
 const openrouter = new OpenRouter({

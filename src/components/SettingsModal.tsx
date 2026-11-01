@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+﻿import React, { useState } from 'react';
 import { X, Check, Key, Sparkles, ExternalLink, ShieldCheck } from 'lucide-react';
 import {
   AVAILABLE_MODELS,

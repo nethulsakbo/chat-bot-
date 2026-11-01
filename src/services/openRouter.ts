@@ -1,4 +1,4 @@
-import { OpenRouter } from '@openrouter/sdk';
+﻿import { OpenRouter } from '@openrouter/sdk';
 import { NethulMode } from '../types';
 
 export interface OpenRouterMessage {
@@ -16,15 +16,9 @@ export interface StreamCallbacks {
 // Curated OpenRouter models with good responsiveness
 export const AVAILABLE_MODELS = [
   {
-    id: 'z-ai/glm-5.3-flash',
-    name: 'GLM 5.3 Flash (Z-AI)',
-    description: 'Ultra-fast flash reasoning & high accuracy (Recommended)',
-    badge: 'Recommended',
-  },
-  {
     id: 'nvidia/nemotron-3-ultra-550b-a55b:free',
     name: 'Nemotron 3 Ultra 550B (Free)',
-    description: 'High-power reasoning & verified logic',
+    description: 'High-power reasoning & verified logic (Recommended)',
     badge: 'Fast & Free',
   },
   {
@@ -69,7 +63,7 @@ export const getStoredModel = (): string => {
   return (
     localStorage.getItem('nethul_selected_model') ||
     import.meta.env.VITE_DEFAULT_MODEL ||
-    'z-ai/glm-5.3-flash'
+    'nvidia/nemotron-3-ultra-550b-a55b:free'
   );
 };
 

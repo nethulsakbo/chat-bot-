@@ -1,4 +1,4 @@
-import { NethulMode, NethulModel } from '../types';
+﻿import { NethulMode, NethulModel } from '../types';
 
 interface BotResponseData {
   text: string;

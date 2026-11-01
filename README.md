@@ -76,3 +76,57 @@ npm run build
 ```bash
 npm run preview
 ```
+
+
+---
+
+## 🤖 OpenRouter API Test Script
+
+A standalone TypeScript script is included to demo streaming chat completions from [OpenRouter](https://openrouter.ai/) using the `@openrouter/sdk`.
+
+### Setup
+
+1. **Set your API key** in the `.env` file at the project root:
+   ```env
+   VITE_OPENROUTER_API_KEY=sk-or-v1-your-key-here
+   ```
+
+2. **Install dependencies** (if not already done):
+   ```bash
+   npm install
+   ```
+
+### Run the test
+
+```bash
+npm run test:openrouter
+```
+
+This will:
+- Stream a response from the `nvidia/nemotron-3-ultra-550b-a55b:free` model
+- Print the answer character-by-character to the console
+- Log the reasoning token count from the final chunk
+
+**Example output:**
+```
+There are **3** r's in the word "strawberry".
+
+Here is the breakdown:
+st**r**awbe**rr**y
+Reasoning tokens: 19
+```
+
+### Changing the model
+
+Edit [`test-openrouter.ts`](file:///c:/Users/nethu/OneDrive/Documents/chat-bot-/test-openrouter.ts) and replace the `model` field with any OpenRouter-supported model ID. Browse available models at [openrouter.ai/models](https://openrouter.ai/models).
+
+---
+
+## 📁 Environment Variables
+
+| Variable | Description |
+|----------|-------------|
+| `VITE_OPENROUTER_API_KEY` | Your OpenRouter API key |
+| `VITE_DEFAULT_MODEL` | Default model for the chatbot UI (e.g. `x-ai/grok-2-1212`) |
+
+> **⚠️ Important:** Never commit your `.env` file. It is already listed in `.gitignore`.
